@@ -1,0 +1,83 @@
+var AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-1'});
+var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
+var s3 = new AWS.S3();
+
+function stopInstance()
+{
+    var params = {
+        InstanceIds: [
+           "i-0a7e93b19b77277f4"
+        ]
+       };
+       ec2.stopInstances(params, function(err, data) 
+       {
+         if (err)
+         {
+              console.log("error in stopping instance",err, err.stack); // an error occurred
+         }
+         else 
+         {
+            console.log("success in stopping instance",data);           // successful response
+            
+            setTimeout(function () {
+               startInstance();
+             }, 30000)
+         }
+    
+       });
+       
+}
+
+function startInstance()
+{
+    var params = {
+        InstanceIds: [
+           "i-0a7e93b19b77277f4"
+        ]
+       };
+       ec2.startInstances(params, function(err, data) 
+       {
+         if (err)
+         {
+              console.log("error in starting instance",err, err.stack); // an error occurred
+         }
+         else 
+         {
+            console.log("success in starting instance",data);           // successful response
+            setTimeout(function () {
+               s3create();
+             }, 30000)
+         }
+    
+       });
+       
+}
+
+
+function s3create()
+{
+    var params = {
+        Bucket: "ex1buck"
+       };
+       s3.createBucket(params, function(err, data) 
+       {
+         if (err)
+         {
+              console.log("error in stopping bucket create",err, err.stack); // an error occurred
+         }
+         else 
+         { 
+             console.log("success in starting bucket",data);           // successful response
+         }
+        
+       });
+       
+}
+
+
+
+
+module.exports.handler = stopInstance;
+
+
